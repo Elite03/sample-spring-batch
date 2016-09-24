@@ -1,0 +1,54 @@
+package net.ldauvilaire.sample.batch.job.first;
+
+import java.io.File;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.batch.core.JobParameters;
+import org.springframework.batch.core.StepExecution;
+import org.springframework.batch.core.annotation.BeforeStep;
+import org.springframework.batch.core.configuration.annotation.StepScope;
+import org.springframework.batch.item.file.FlatFileItemReader;
+import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
+import org.springframework.batch.item.file.mapping.DefaultLineMapper;
+import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.stereotype.Component;
+
+import net.ldauvilaire.sample.batch.domain.dto.PersonDTO;
+import net.ldauvilaire.sample.batch.job.JobConstants;
+
+@StepScope
+@Component(JobConstants.FIRST_JOB_ITEM_READER_ID)
+public class FirstItemReader extends FlatFileItemReader<PersonDTO> {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(FirstItemReader.class);
+
+	public FirstItemReader() {
+		super();
+
+		setLineMapper(new DefaultLineMapper<PersonDTO>() {{
+			setLineTokenizer(new DelimitedLineTokenizer() {{
+				setNames(new String[] { "firstName", "lastName" });
+			}});
+			setFieldSetMapper(new BeanWrapperFieldSetMapper<PersonDTO>() {{
+				setTargetType(PersonDTO.class);
+			}});
+		}});
+	}
+
+	@BeforeStep
+	public void beforeStep(StepExecution stepExecution) {
+
+		JobParameters jobParameters = stepExecution.getJobParameters();
+		String dirName = jobParameters.getString("dirName");
+		String fileName = jobParameters.getString("fileName");
+		String filePath = dirName + File.separator + fileName;
+		LOGGER.info("dirName = [{}].", dirName);
+		LOGGER.info("fileName = [{}].", fileName);
+		LOGGER.info("filePath = [{}].", filePath);
+
+		FileSystemResource resource = new FileSystemResource(filePath);
+		setResource(resource);
+	}
+}
