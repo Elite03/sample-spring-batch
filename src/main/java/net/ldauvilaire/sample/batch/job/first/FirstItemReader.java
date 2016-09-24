@@ -27,14 +27,17 @@ public class FirstItemReader extends FlatFileItemReader<PersonDTO> {
 	public FirstItemReader() {
 		super();
 
-		setLineMapper(new DefaultLineMapper<PersonDTO>() {{
-			setLineTokenizer(new DelimitedLineTokenizer() {{
-				setNames(new String[] { "firstName", "lastName" });
-			}});
-			setFieldSetMapper(new BeanWrapperFieldSetMapper<PersonDTO>() {{
-				setTargetType(PersonDTO.class);
-			}});
-		}});
+		DelimitedLineTokenizer lineTokenizer = new DelimitedLineTokenizer();
+		lineTokenizer.setNames(new String[] { "firstName", "lastName" });
+
+		BeanWrapperFieldSetMapper<PersonDTO> fieldSetMapper = new BeanWrapperFieldSetMapper<PersonDTO>();
+		fieldSetMapper.setTargetType(PersonDTO.class);
+
+		DefaultLineMapper<PersonDTO> lineMapper = new DefaultLineMapper<PersonDTO>();
+		lineMapper.setLineTokenizer(lineTokenizer);
+		lineMapper.setFieldSetMapper(fieldSetMapper);
+
+		setLineMapper(lineMapper);
 	}
 
 	@BeforeStep
