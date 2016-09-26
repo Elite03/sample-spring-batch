@@ -16,7 +16,7 @@ public class ApplicationTest {
 		Resource resource = new ClassPathResource(FIRST_TEST_RESOURCE_PATH);
 		String filePath = resource.getFile().getPath();
 
-		String args[] = new String[] { filePath };
+		String args[] = new String[] { "-init", filePath };
 		Application.main(args);
 	}
 }

@@ -48,8 +48,10 @@ public class FirstJobExecutionListener extends JobExecutionListenerSupport {
 			int nbResults = ((results == null) ? 0 : results.size());
 			LOGGER.info("Found {} entities in the database.", nbResults);
 			if (results != null) {
+				int index = 0;
 				for (PersonDTO person : results) {
-					LOGGER.info("Found <{}> in the database.", person);
+					index++;
+					LOGGER.info("{}/{}: Found <{}> in the database.", index, nbResults, person);
 				}
 			}
 		}
